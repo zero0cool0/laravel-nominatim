@@ -1,3 +1,4 @@
+[![Latest Stable Version](http://poser.pugx.org/wimski/laravel-nominatim/v)](https://packagist.org/packages/wimski/laravel-nominatim)
 [![Coverage Status](https://coveralls.io/repos/github/wimski/laravel-nominatim/badge.svg?branch=master)](https://coveralls.io/github/wimski/laravel-nominatim?branch=master)
 [![PHPUnit](https://github.com/wimski/laravel-nominatim/actions/workflows/phpunit.yml/badge.svg)](https://github.com/wimski/laravel-nominatim/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/wimski/laravel-nominatim/actions/workflows/phpstan.yml/badge.svg)](https://github.com/wimski/laravel-nominatim/actions/workflows/phpstan.yml)
@@ -5,6 +6,10 @@
 # Laravel integration for Nominatim Geocoding API Client
 
 This package is a Laravel integration of the [Nominatim Geocoding API Client](https://packagist.org/packages/wimski/nominatim-geocoding-api-client).
+
+## Changelog
+
+[View the changelog.](./CHANGELOG.md)
 
 ## Usage
 
