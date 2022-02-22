@@ -75,7 +75,10 @@ you can pass these in by extending the service provider.
 
 namespace App\Providers;
 
-use Psr\Http\Client\ClientInterface as HttpClientInterface;use Psr\Http\Message\RequestFactoryInterface;use Psr\Http\Message\UriFactoryInterface;use Wimski\LaravelNominatim\Providers\NominatimServiceProvider as ServiceProvider;
+use Psr\Http\Client\ClientInterface as HttpClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\UriFactoryInterface;
+use Wimski\LaravelNominatim\Providers\NominatimServiceProvider as ServiceProvider;
 
 class NominatimServiceProvider extends ServiceProvider
 {
