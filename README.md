@@ -129,11 +129,11 @@ return [
 Services for the following providers are currently available:
 * [Nominatim](https://nominatim.org/release-docs/latest/api/Overview/)
   * `NOMINATIM_SERVICE=nominatim`
-  * `NOMINATIM_USER_AGENT=` (required)
-  * `NOMINATIM_EMAIL=` (required)
+  * `NOMINATIM_NOMINATIM_USER_AGENT=` (required)
+  * `NOMINATIM_NOMINATIM_EMAIL=` (required)
 * [LocationIQ](https://locationiq.com/docs)
   * `NOMINATIM_SERVICE=location_iq`
-  * `LOCATION_IQ_KEY=` (access token, required)
+  * `NOMINATIM_LOCATION_IQ_KEY=` (access token, required)
 
 ## PHPUnit
 
