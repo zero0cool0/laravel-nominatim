@@ -134,6 +134,8 @@ Services for the following providers are currently available:
 * [LocationIQ](https://locationiq.com/docs)
   * `NOMINATIM_SERVICE=location_iq`
   * `NOMINATIM_LOCATION_IQ_KEY=` (access token, required)
+* Generic
+  * `NOMINATIM_SERVICE=generic`
 
 ## PHPUnit
 
