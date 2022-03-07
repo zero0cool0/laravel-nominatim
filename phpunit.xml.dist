@@ -20,8 +20,8 @@
     <php>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
         <env name="APP_DEBUG" value="true"/>
-        <env name="NOMINATIM_USER_AGENT" value="user-agent"/>
-        <env name="NOMINATIM_EMAIL" value="email@provider.net"/>
-        <env name="LOCATION_IQ_KEY" value="access-token"/>
+        <env name="NOMINATIM_NOMINATIM_USER_AGENT" value="user-agent"/>
+        <env name="NOMINATIM_NOMINATIM_EMAIL" value="email@provider.net"/>
+        <env name="NOMINATIM_LOCATION_IQ_KEY" value="access-token"/>
     </php>
 </phpunit>

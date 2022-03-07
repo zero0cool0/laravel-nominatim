@@ -9,7 +9,11 @@ This changelog is initialized in release 1.0.0
 
 ## [Unreleased]
 
+### Added
+* Generic service support
+
 ### Changed
 * Prefix service specific env vars with `NOMINATIM_`
+* Replace `PackageConfig` with `GeocoderServiceFactory`
 
 [Unreleased]: https://github.com/wimski/laravel-nominatim/compare/v1.0.0...master

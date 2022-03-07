@@ -21,5 +21,11 @@ return [
             'forward_geocoding_endpoint' => env('NOMINATIM_LOCATION_IQ_FORWARD_GEOCODING_ENDPOINT', 'search.php'),
             'reverse_geocoding_endpoint' => env('NOMINATIM_LOCATION_IQ_REVERSE_GEOCODING_ENDPOINT', 'reverse.php'),
         ],
+
+        'generic' => [
+            'url'                        => env('NOMINATIM_GENERIC_URL'),
+            'forward_geocoding_endpoint' => env('NOMINATIM_GENERIC_FORWARD_GEOCODING_ENDPOINT', 'search'),
+            'reverse_geocoding_endpoint' => env('NOMINATIM_GENERIC_REVERSE_GEOCODING_ENDPOINT', 'reverse'),
+        ],
     ],
 ];

@@ -11,21 +11,50 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Wimski\LaravelNominatim\Config\PackageConfig;
 use Wimski\LaravelNominatim\Enums\ServiceEnum;
-use Wimski\Nominatim\Config\LocationIqConfig;
-use Wimski\Nominatim\Config\NominatimConfig;
+use Wimski\LaravelNominatim\Factories\GeocoderServiceFactory;
+use Wimski\Nominatim\Contracts\ClientInterface;
+use Wimski\Nominatim\Contracts\GeocoderServiceInterface;
+use Wimski\Nominatim\Contracts\Transformers\GeocodingResponseTransformerInterface;
+use Wimski\Nominatim\GeocoderServices\GenericGeocoderService;
+use Wimski\Nominatim\GeocoderServices\LocationIqGeocoderService;
+use Wimski\Nominatim\GeocoderServices\NominatimGeocoderService;
 
-class PackageConfigTest extends TestCase
+class GeocoderServiceFactoryTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
+
+    protected GeocoderServiceFactory $factory;
+
+    /**
+     * @var ClientInterface|MockInterface
+     */
+    protected $client;
+
+    /**
+     * @var GeocodingResponseTransformerInterface|MockInterface
+     */
+    protected $transformer;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client      = Mockery::mock(ClientInterface::class);
+        $this->transformer = Mockery::mock(GeocodingResponseTransformerInterface::class);
+
+        $this->factory = new GeocoderServiceFactory(
+            $this->client,
+            $this->transformer,
+        );
+    }
 
     /**
      * @test
      */
-    public function it_parses_nominatim_config(): void
+    public function it_makes_a_nominatim_service(): void
     {
-        $packageConfig = $this->makeConfigWithData([
+        $service = $this->makeServiceWithData([
             'service'  => 'nominatim',
             'language' => 'nl',
             'services' => [
@@ -39,25 +68,15 @@ class PackageConfigTest extends TestCase
             ],
         ]);
 
-        static::assertTrue($packageConfig->getService()->equals(ServiceEnum::NOMINATIM()));
-
-        $service = $packageConfig->getServiceConfig();
-
-        static::assertInstanceOf(NominatimConfig::class, $service);
-        static::assertSame('app-identifier', $service->getUserAgent());
-        static::assertSame('email@provider.net', $service->getEmail());
-        static::assertSame('https://api.org', $service->getUrl());
-        static::assertSame('front', $service->getForwardGeocodingEndpoint());
-        static::assertSame('back', $service->getReverseGeocodingEndpoint());
-        static::assertSame('nl', $service->getLanguage());
+        static::assertInstanceOf(NominatimGeocoderService::class, $service);
     }
 
     /**
      * @test
      */
-    public function it_parses_location_iq_config(): void
+    public function it_makes_a_location_iq_service(): void
     {
-        $packageConfig = $this->makeConfigWithData([
+        $service = $this->makeServiceWithData([
             'service'  => 'location_iq',
             'language' => 'nl',
             'services' => [
@@ -70,16 +89,27 @@ class PackageConfigTest extends TestCase
             ],
         ]);
 
-        static::assertTrue($packageConfig->getService()->equals(ServiceEnum::LOCATION_IQ()));
+        static::assertInstanceOf(LocationIqGeocoderService::class, $service);
+    }
 
-        $service = $packageConfig->getServiceConfig();
+    /**
+     * @test
+     */
+    public function it_makes_a_generic_service(): void
+    {
+        $service = $this->makeServiceWithData([
+            'service'  => 'generic',
+            'language' => 'nl',
+            'services' => [
+                'generic' => [
+                    'url'                        => 'https://api.org',
+                    'forward_geocoding_endpoint' => 'front',
+                    'reverse_geocoding_endpoint' => 'back',
+                ],
+            ],
+        ]);
 
-        static::assertInstanceOf(LocationIqConfig::class, $service);
-        static::assertSame('access-token', $service->getKey());
-        static::assertSame('https://api.org', $service->getUrl());
-        static::assertSame('front', $service->getForwardGeocodingEndpoint());
-        static::assertSame('back', $service->getReverseGeocodingEndpoint());
-        static::assertSame('nl', $service->getLanguage());
+        static::assertInstanceOf(GenericGeocoderService::class, $service);
     }
 
     /**
@@ -90,7 +120,7 @@ class PackageConfigTest extends TestCase
         static::expectException(RuntimeException::class);
         static::expectExceptionMessage('Nominatim config not found');
 
-        $this->makeConfigWithData(null);
+        $this->makeServiceWithData(null);
     }
 
     /**
@@ -101,7 +131,7 @@ class PackageConfigTest extends TestCase
         static::expectException(RuntimeException::class);
         static::expectExceptionMessage("The config value 'nominatim.service' is not supported");
 
-        $this->makeConfigWithData([
+        $this->makeServiceWithData([
             'service' => 'foo',
         ]);
     }
@@ -114,7 +144,7 @@ class PackageConfigTest extends TestCase
         static::expectException(RuntimeException::class);
         static::expectExceptionMessage("The config value 'nominatim.language' must be a string or null");
 
-        $this->makeConfigWithData([
+        $this->makeServiceWithData([
             'service'  => 'nominatim',
             'language' => 123,
         ]);
@@ -129,7 +159,7 @@ class PackageConfigTest extends TestCase
         static::expectException(RuntimeException::class);
         static::expectExceptionMessage("The config value 'nominatim.services.{$service}' must be present");
 
-        $this->makeConfigWithData([
+        $this->makeServiceWithData([
             'service'  => $service,
             'language' => null,
             'services' => [],
@@ -172,12 +202,17 @@ class PackageConfigTest extends TestCase
                     'forward_geocoding_endpoint' => 'x',
                     'reverse_geocoding_endpoint' => 'x',
                 ],
+                'generic' => [
+                    'url'                        => 'x',
+                    'forward_geocoding_endpoint' => 'x',
+                    'reverse_geocoding_endpoint' => 'x',
+                ],
             ],
         ];
 
         Arr::forget($data, "services.{$service}.{$key}");
 
-        $this->makeConfigWithData($data);
+        $this->makeServiceWithData($data);
     }
 
     /**
@@ -195,14 +230,17 @@ class PackageConfigTest extends TestCase
             ['location_iq', 'url'],
             ['location_iq', 'forward_geocoding_endpoint'],
             ['location_iq', 'reverse_geocoding_endpoint'],
+            ['generic', 'url'],
+            ['generic', 'forward_geocoding_endpoint'],
+            ['generic', 'reverse_geocoding_endpoint'],
         ];
     }
 
     /**
      * @param array<string, mixed>|null $data
-     * @return PackageConfig
+     * @return GeocoderServiceInterface
      */
-    protected function makeConfigWithData(?array $data): PackageConfig
+    protected function makeServiceWithData(?array $data): GeocoderServiceInterface
     {
         /** @var Config|MockInterface $config */
         $config = Mockery::mock(Config::class)
@@ -212,6 +250,6 @@ class PackageConfigTest extends TestCase
             ->andReturn($data)
             ->getMock();
 
-        return new PackageConfig($config);
+        return $this->factory->make($config);
     }
 }
