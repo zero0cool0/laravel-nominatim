@@ -22,7 +22,7 @@
     "homepage": "https://github.com/wimski/laravel-nominatim",
     "require": {
         "php": "^8.0",
-        "laravel/framework": "^8.0 || ^9.0" || ^10.0", 
+        "laravel/framework": "^8.0 || ^9.0 || ^10.0", 
         "wimski/nominatim-geocoding-api-client": "^v1.1"
     },
     "require-dev": {
